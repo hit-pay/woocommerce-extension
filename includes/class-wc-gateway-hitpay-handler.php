@@ -2,7 +2,9 @@
 /**
  * Check if WooCommerce is active
  */
-if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+if (is_plugin_active( 'woocommerce/woocommerce.php')) {
 
     require_once dirname( __FILE__ ) . '/class-wc-gateway-hitpay-response.php';
 

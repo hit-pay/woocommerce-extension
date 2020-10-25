@@ -4,14 +4,17 @@ Plugin Name: HitPay
 Description: HitPay Payment Gateway
 Author: HitPay Payment Solutions Pte Ltd
 Author URI: https://www.hitpayapp.com
-Version: 1.1.0
+Version: 1.3.3
 Copyright: © 2020 HitPay
 */
 
 /**
  * Check if WooCommerce is active
  */
-if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+if (is_plugin_active( 'woocommerce/woocommerce.php')) {
 
     function init_hitpay_gateway_class()
     {
@@ -209,7 +212,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                 return $saved;
             }
 
-            public function admin_options()
+            /*public function admin_options()
             {
                 if ($this->is_valid_for_use()) {
                     parent::admin_options();
@@ -228,7 +231,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
                     ),
                     true
                 );
-            }
+            }*/
 
             public function process_refund($order_id, $amount = null, $reason = '')
             {
@@ -282,15 +285,15 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 
                 $icon_html = '';
                 if ($this->wechat_alipay) {
-                    $icon_html .= $icon_webpay;
+                    $icon_html .= str_replace('<img ', '<img style="width: 60px;" ', $icon_webpay);
                 }
 
                 if ($this->credit_card) {
-                    $icon_html .= $icon_cards;
+                    $icon_html .= str_replace('<img ', '<img style="width: 80px;" ', $icon_cards);
                 }
 
                 if ($this->paynow_qr) {
-                    $icon_html .= $icon_paynow;
+                    $icon_html .= str_replace('<img ', '<img style="width: 30px;" ', $icon_paynow);
                 }
 
                 /*$icon = WC_HTTPS::force_https_url(str_replace('/woocommerce', '', WC()->plugin_url()) . '/woocommerce-hitpay/assets/images/accepted-marks.png');
@@ -349,6 +352,38 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         return $methods;
     }
 
+    function current_location()
+    {
+        if (isset($_SERVER['HTTPS']) &&
+            ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
+            isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+            $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+            $protocol = 'https://';
+        } else {
+            $protocol = 'http://';
+        }
+        return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    }
+
+    function woocommerce_hitpay_check_return()
+    {
+        if (!isset($_SERVER['HTTP_REFERER'])) {
+            return;
+        }
+
+        $endpointTest = 'https://securecheckout.staging.hit-pay.loc/payment-gateway/woocommerce/checkout';
+        $endpointProd = 'https://securecheckout.hit-pay.com/payment-gateway/woocommerce/checkout';
+
+        $checkout_link = esc_url(wc_get_checkout_url());
+        if (($endpointTest == $_SERVER['HTTP_REFERER']
+            || $endpointProd == $_SERVER['HTTP_REFERER'])
+            && strpos(current_location(), $checkout_link) === false) {
+            header('Location: ' . $checkout_link);
+            exit;
+        }
+    }
+
+    add_action('init', 'woocommerce_hitpay_check_return');
     add_action('plugins_loaded', 'init_hitpay_gateway_class');
     add_filter('woocommerce_payment_gateways', 'add_hitpay_gateway_class');
 

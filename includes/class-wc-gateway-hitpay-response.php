@@ -2,7 +2,9 @@
 /**
  * Check if WooCommerce is active
  */
-if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+if (is_plugin_active( 'woocommerce/woocommerce.php')) {
 
     abstract class WC_Gateway_HitPay_Response 
     {
@@ -44,7 +46,7 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         {
             if (!$order->has_status(array('processing', 'completed'))) {
                 $order->add_order_note($note);
-                $order->update_status( 'completed' );
+                /*$order->update_status( 'completed' );*/
                 $order->payment_complete($reference);
 
                 WC()->cart->empty_cart();

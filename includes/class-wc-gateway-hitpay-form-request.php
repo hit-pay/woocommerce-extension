@@ -2,7 +2,9 @@
 /**
  * Check if WooCommerce is active
  */
-if (in_array( 'woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+if (is_plugin_active( 'woocommerce/woocommerce.php')) {
 
     class WC_Gateway_HitPay_Form_Request
     {
@@ -42,14 +44,14 @@ if (in_array( 'woocommerce/woocommerce.php', apply_filters('active_plugins', get
          */
         public function display_form_request($order)
         {
-            if (!isset($_SERVER['HTTP_REFERER'])) {
+            $endpoint = $this->gateway->testmode
+                ? 'https://securecheckout.staging.hit-pay.com/payment-gateway/woocommerce/checkout'
+                : 'https://securecheckout.hit-pay.com/payment-gateway/woocommerce/checkout';
+
+            if ($endpoint == $_SERVER['HTTP_REFERER'] || !isset($_SERVER['HTTP_REFERER'])) {
                 header('Location: ' . esc_url( wc_get_checkout_url() ));
                 exit;
             }
-
-            $endpoint               = $this->gateway->testmode
-                ? 'https://securecheckout.staging.hit-pay.com/payment-gateway/woocommerce/checkout'
-                : 'https://securecheckout.hit-pay.com/payment-gateway/woocommerce/checkout';
 
             $params                 = $this->get_transaction_args($order);
             $api_key                = $this->gateway->testmode
@@ -77,14 +79,15 @@ if (in_array( 'woocommerce/woocommerce.php', apply_filters('active_plugins', get
                     'x_url_callback'                => $this->notify_url,
                     'x_customer_first_name'         => $order->get_billing_first_name(),
                     'x_customer_last_name'          => $order->get_billing_last_name(),
-                    'x_customer_billing_address1'   => $order->get_billing_address_1(),
+                    /*'x_customer_billing_address1'   => $order->get_billing_address_1(),
                     'x_customer_billing_address2'   => $order->get_billing_address_2(),
                     'x_customer_billing_city'       => $order->get_billing_city(),
                     'x_customer_billing_state'      => $this->get_hitpay_state($order->get_billing_country(), $order->get_billing_state()),
                     'x_customer_billing_zip'        => wc_format_postcode( $order->get_billing_postcode(), $order->get_billing_country()),
-                    'x_customer_billing_country'    => $order->get_billing_country(),
+                    'x_customer_billing_country'    => $order->get_billing_country(),*/
                     'x_customer_email'              => $order->get_billing_email(),
-                    'x_test'                        => $this->gateway->testmode? "true": "false"
+                    'x_test'                        => $this->gateway->testmode? "true": "false",
+                    'x_shop_name'                    => get_home_url(),
                 ),
                 $this->get_shipping_args($order)
             );
