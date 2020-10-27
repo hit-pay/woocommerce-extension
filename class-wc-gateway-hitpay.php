@@ -365,25 +365,6 @@ if (is_plugin_active( 'woocommerce/woocommerce.php')) {
         return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
-    function woocommerce_hitpay_check_return()
-    {
-        if (!isset($_SERVER['HTTP_REFERER'])) {
-            return;
-        }
-
-        $endpointTest = 'https://securecheckout.staging.hit-pay.loc/payment-gateway/woocommerce/checkout';
-        $endpointProd = 'https://securecheckout.hit-pay.com/payment-gateway/woocommerce/checkout';
-
-        $checkout_link = esc_url(wc_get_checkout_url());
-        if (($endpointTest == $_SERVER['HTTP_REFERER']
-            || $endpointProd == $_SERVER['HTTP_REFERER'])
-            && strpos(current_location(), $checkout_link) === false) {
-            header('Location: ' . $checkout_link);
-            exit;
-        }
-    }
-
-    add_action('init', 'woocommerce_hitpay_check_return');
     add_action('plugins_loaded', 'init_hitpay_gateway_class');
     add_filter('woocommerce_payment_gateways', 'add_hitpay_gateway_class');
 
