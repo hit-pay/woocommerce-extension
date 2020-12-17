@@ -4,7 +4,7 @@ Plugin Name: HitPay
 Description: HitPay Payment Gateway
 Author: HitPay Payment Solutions Pte Ltd
 Author URI: https://www.hitpayapp.com
-Version: 1.3.3
+Version: 1.3.5
 Copyright: © 2020 HitPay
 */
 
@@ -179,11 +179,14 @@ if (is_plugin_active( 'woocommerce/woocommerce.php')) {
             {
                 global $woocommerce;
 
+                /**
+                 * @var WC_Order $order
+                 */
                 $order = wc_get_order($order_id);
 
                 return array(
                     'result' => 'success',
-                    'redirect' => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+                    'redirect' => add_query_arg('order-pay', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
                 );
             }
 

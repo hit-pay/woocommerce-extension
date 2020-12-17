@@ -45,7 +45,8 @@ if (is_plugin_active( 'woocommerce/woocommerce.php')) {
         public function display_form_request($order)
         {
             $endpoint = $this->gateway->testmode
-                ? 'https://securecheckout.staging.hit-pay.loc/payment-gateway/woocommerce/checkout'
+                ? 'https://securecheckout.staging.hit-pay.com/payment-gateway/woocommerce/checkout'
+//                    ? 'https://securecheckout.staging.hit-pay.loc/shopify/payment'
                 : 'https://securecheckout.hit-pay.com/payment-gateway/woocommerce/checkout';
 
             $params                 = $this->get_transaction_args($order);
