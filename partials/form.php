@@ -14,16 +14,24 @@
 </form>
 
 <script type="text/javascript">
-    jQuery(document).ready(function ($) {
-
-//Hide order details (not needed, will redirect anyway)
+/*    jQuery(document).ready(function ($) {
         $('#content .order_details').hide();
-
-//Submit form in the background to remove the extra click from the user
         var targetForm = $("#hitpay");
         console.log("--> Silently submit form");
         targetForm.submit();
+    });*/
 
+    document.addEventListener('DOMContentLoaded', function(){
+        var block = null;
+        var targetForm = null;
+        //Hide order details (not needed, will redirect anyway)
+        if (block = document.querySelector("#content .order_details")) {
+            block.style.display = 'none';
+        }
+        //Submit form in the background to remove the extra click from the user
+        if((targetForm = document.querySelector("#hitpay")) !== null) {
+            console.log("--> Silently submit form");
+            targetForm.submit()
+        }
     });
-    // end of jQuery(document).ready
 </script>
