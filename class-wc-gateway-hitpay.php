@@ -4,7 +4,7 @@ Plugin Name: HitPay
 Description: HitPay Payment Gateway
 Author: HitPay Payment Solutions Pte Ltd
 Author URI: https://www.hitpayapp.com
-Version: 1.3.6
+Version: 1.4.0
 Copyright: © 2020 HitPay
 */
 
