@@ -71,7 +71,7 @@ if (is_plugin_active( 'woocommerce/woocommerce.php')) {
                     'x_amount'                      => $order->get_total(),
                     'x_invoice'                     => $order->get_order_number(),
                     'x_order_id'                    => $order->get_id(),
-                    'x_reference'                   => $order->get_id(),
+                    'x_reference'                   => $order->get_order_key(),
                     'x_url_callback'                => $this->notify_url,
                     'x_customer_first_name'         => $order->get_billing_first_name(),
                     'x_customer_last_name'          => $order->get_billing_last_name(),
