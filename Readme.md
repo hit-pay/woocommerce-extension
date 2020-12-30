@@ -1,4 +1,4 @@
-# HitPay ![Logo](logo.png)
+# HitPay ![Logo](images/logo.png)
 
 ## Installing
 
